@@ -6,7 +6,7 @@
 Library that contains abstract classes for manager and settings retriever used to connect to the database.
 
 Using `IDbConnection` as parameter it's checked if the connection is broken or closed. If it's' broken then `Close` method is called.
-If the connection is in the closed state then the `ADbSettings` class will open and close the connection as needed.
+If the connection is in the closed state then it will be opened and closed as needed.
 
 The `ADbSettings` has constant table and column names that can be used in creating queries and the table in the database. The values are shown below.
 
