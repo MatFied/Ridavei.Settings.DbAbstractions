@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 
 using Ridavei.Settings.DbAbstractions.Settings;
 
@@ -11,9 +10,7 @@ namespace Ridavei.Settings.DbAbstractions.Tests.Settings
         private const string _tryGetValue = "Test";
         private static Dictionary<string, string> _getAllDict = new Dictionary<string, string>();
 
-        public MockDbSettings(string dictionaryName, IDbConnection connection) : base(dictionaryName, connection) { }
-
-        public MockDbSettings(string dictionaryName, DbProviderFactory dbFactory, string connectionString) : base(dictionaryName, dbFactory, connectionString) { }
+        public MockDbSettings(string dictionaryName) : base(dictionaryName) { }
 
         protected override int AddOrUpdateValueInDb(IDbConnection connection, string key, string value)
         {

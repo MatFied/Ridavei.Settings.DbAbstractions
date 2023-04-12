@@ -1,12 +1,14 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 
 using Ridavei.Settings.DbAbstractions.Tests.DBMock;
+using Ridavei.Settings.DbAbstractions.Tests.Settings;
 
 using NSubstitute;
 
 namespace Ridavei.Settings.DbAbstractions.Tests
 {
-    internal class CommonObjects
+    internal static class CommonObjects
     {
         public static IDbConnection DBConnectionSubstitute()
         {
@@ -18,5 +20,18 @@ namespace Ridavei.Settings.DbAbstractions.Tests
 
         public static readonly MockDBProviderFactory MockDBProviderFactory = new MockDBProviderFactory();
         public const string MockConnectionString = "ConnectionString";
+        private const string DictionaryName = "Test";
+
+        public static MockDbSettings CreateMockDbSettings()
+        {
+            var res = new MockDbSettings(DictionaryName);
+            res.SetRunQueryMethod(MockRunQuery);
+            return res;
+        }
+
+        private static object MockRunQuery(Func<IDbConnection, object> func)
+        {
+            return func(null);
+        }
     }
 }

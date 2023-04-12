@@ -1,7 +1,4 @@
-﻿using System;
-
-using Ridavei.Settings.DbAbstractions.Tests.DBMock;
-using Ridavei.Settings.DbAbstractions.Tests.Manager;
+﻿using Ridavei.Settings.DbAbstractions.Tests.Extensions;
 
 using NUnit.Framework;
 using Shouldly;
@@ -9,38 +6,11 @@ using Shouldly;
 namespace Ridavei.Settings.DbAbstractions.Tests
 {
     [TestFixture]
-    internal class ADbManagerTests
+    internal class SettingsExtensionsTests
     {
         private readonly SettingsBuilder _builder = SettingsBuilder.CreateBuilder();
 
         private const string DictionaryName = "Test";
-
-        [Test]
-        public void Constructor_NullDbConnection__RaisesException()
-        {
-            Should.Throw<ArgumentNullException>(() =>
-            {
-                new MockDbManager(null);
-            });
-        }
-
-        [Test]
-        public void Constructor_NullDBProviderFactory__RaisesException()
-        {
-            Should.Throw<ArgumentNullException>(() =>
-            {
-                new MockDbManager(null, null);
-            });
-        }
-
-        [Test]
-        public void Constructor_NullConnectionString__RaisesException()
-        {
-            Should.Throw<ArgumentNullException>(() =>
-            {
-                new MockDbManager(new MockDBProviderFactory(), null);
-            });
-        }
 
         [Test]
         public void GetSettings_MockProvider__RetrieveSettings()

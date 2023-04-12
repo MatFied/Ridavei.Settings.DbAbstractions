@@ -8,83 +8,55 @@ Library that contains abstract classes for manager and settings retriever used t
 Using `IDbConnection` as parameter it's checked if the connection is broken or closed. If it's' broken then `Close` method is called.
 If the connection is in the closed state then it will be opened and closed as needed.
 
-The `ADbSettings` has constant table and column names that can be used in creating queries and the table in the database. The values are shown below.
-
-```csharp
-public abstract class ADbSettings : ASettings
-{
-    /// <summary>
-    /// Name of the database table for storing settings.
-    /// </summary>
-    protected const string TableName = "RidaveiSettings";
-
-    /// <summary>
-    /// Name of the dictionary column name.
-    /// </summary>
-    protected const string DictionaryColumnName = "DictionaryName";
-
-    /// <summary>
-    /// Name of the settings key column name.
-    /// </summary>
-    protected const string SettingsKeyColumnName = "SettingsKey";
-    
-    /// <summary>
-    /// Name of the settings value column name.
-    /// </summary>
-    protected const string SettingsValueColumnName = "SettingsValue";
-
-    //Rest of the class
-}
-```
-
 ## Example of use
 
 ### Creating classes to load data from SQL Server
 ```csharp
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
 
-using Ridavei.Settings.Base;
-using Ridavei.Settings.DbAbstractions;
+using Ridavei.Settings.DbAbstractions.Managers;
+using Ridavei.Settings.DbAbstractions.Settings;
 
 namespace Example
 {
-    internal sealed class SqlServerManager : ADbManager
+    internal sealed class SqlServerConnectionManager : ADbConnectionManager
     {
-        public SqlServerManager(string connectionString) : base(SqlClientFactory.Instance, connectionString) { }
+        public SqlServerConnectionManager(IDbConnection connection) : base(connection) { }
 
-        public SqlServerManager(IDbConnection connection) : base(connection) { }
-
-        protected override ADbSettings CreateDbSettings(string dictionaryName, DbProviderFactory dbFactory, string connectionString)
+        protected override ADbSettings CreateDbSettings(string dictionaryName)
         {
-            return new SqlServerSettings(dictionaryName, dbFactory, connectionString);
+            return new SqlServerSettings(dictionaryName);
         }
 
-        protected override ADbSettings CreateDbSettings(string dictionaryName, IDbConnection connection)
+        protected override bool TryGetDbSettingsObject(string dictionaryName, out ADbSettings settings)
         {
-            return new SqlServerSettings(dictionaryName, connection);
-        }
-
-        protected override bool TryGetDbSettingsObject(string dictionaryName, DbProviderFactory dbFactory, string connectionString, out ASettings settings)
-        {
-            settings = CreateDbSettings(dictionaryName, dbFactory, connectionString);
+            settings = CreateDbSettings(dictionaryName);
             return true;
         }
+    }
 
-        protected override bool TryGetDbSettingsObject(string dictionaryName, IDbConnection connection, out ASettings settings)
+    internal sealed class SqlServerProviderFactoryManager : ADbProviderFactoryManager
+    {
+        public SqlServerProviderFactoryManager(string connectionString) : base(SqlClientFactory.Instance, connectionString) { }
+
+        protected override ADbSettings CreateDbSettings(string dictionaryName)
         {
-            settings = CreateDbSettings(dictionaryName, connection);
+            return new SqlServerSettings(dictionaryName);
+        }
+
+        protected override bool TryGetDbSettingsObject(string dictionaryName, out ADbSettings settings)
+        {
+            settings = CreateDbSettings(dictionaryName);
             return true;
         }
     }
 
     internal sealed class SqlServerSettings : ADbSettings
     {
-        public SqlServerSettings(string dictionaryName, DbProviderFactory dbFactory, string connectionString) : base(dictionaryName, dbFactory, connectionString) { }
-
-        public SqlServerSettings(string dictionaryName, IDbConnection connection) : base(dictionaryName, connection) { }
+        public SqlServerSettings(string dictionaryName) : base(dictionaryName) { }
 
         protected override int AddOrUpdateValueInDb(IDbConnection connection, string key, string value)
         {
